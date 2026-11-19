@@ -4,7 +4,8 @@ import {
   AnalysisError, MAX_REQUEST_BYTES, MAX_RESPONSE_BYTES, analyzeMessages, parseScores,
   validateAnalyzeRequest, type AnalyzeRequest, type AnalysisScore,
 } from "../lib/ai.ts";
-import { POST } from "../app/api/analyze/route.ts";
+import { OPTIONS, POST } from "../app/api/analyze/route.ts";
+import { ANALYZE_URL, assetUrl } from "../lib/runtime-config.ts";
 
 const input: AnalyzeRequest = {
   provider: "openai", apiKey: "test-key-never-real", model: "gpt-4.1-mini", mode: "group",
@@ -249,4 +250,106 @@ test("route returns the strict contract and no-store, without exposing request k
     assert.ok(!text.includes(input.apiKey));
     assert.deepEqual(JSON.parse(text), { scores });
   } finally { globalThis.fetch = saved; }
+});
+
+test("Sites runtime keeps same-origin API and root-relative public assets", () => {
+  assert.equal(ANALYZE_URL, "/api/analyze");
+  assert.equal(assetUrl("sample.json"), "/sample.json");
+  assert.equal(assetUrl("/vendor/lightweight-charts.js"), "/vendor/lightweight-charts.js");
+});
+
+const browserOrigins = ["https://joruno-c.github.io", "https://relationship-candlestick-lab-joruno.perfectcube2.chatgpt.site"];
+for (const origin of browserOrigins) {
+  test(`CORS allows JSON POST preflight for ${origin} without credentials`, async () => {
+    const result = await OPTIONS(new Request("https://api.example/api/analyze", { method: "OPTIONS", headers: {
+      Origin: origin, "Access-Control-Request-Method": "POST", "Access-Control-Request-Headers": "content-type",
+    } }));
+    assert.equal(result.status, 204);
+    assert.equal(result.headers.get("access-control-allow-origin"), origin);
+    assert.equal(result.headers.get("access-control-allow-methods"), "POST");
+    assert.equal(result.headers.get("access-control-allow-headers"), "Content-Type");
+    assert.equal(result.headers.get("access-control-allow-credentials"), null);
+    assert.equal(result.headers.get("vary"), "Origin");
+    assert.match(result.headers.get("cache-control")!, /no-store/);
+  });
+
+  test(`CORS returns the same allowed origin on success and safe failure for ${origin}`, async () => {
+    const saved = globalThis.fetch;
+    globalThis.fetch = async () => response();
+    try {
+      for (const body of [JSON.stringify(input), "invalid JSON"]) {
+        const result = await POST(new Request("https://api.example/api/analyze", { method: "POST", headers: { Origin: origin, "Content-Type": "application/json" }, body }));
+        assert.equal(result.status, body === "invalid JSON" ? 400 : 200);
+        assert.equal(result.headers.get("access-control-allow-origin"), origin);
+        assert.equal(result.headers.get("access-control-allow-credentials"), null);
+        assert.equal(result.headers.get("vary"), "Origin");
+        assert.match(result.headers.get("cache-control")!, /no-store/);
+      }
+    } finally { globalThis.fetch = saved; }
+  });
+}
+
+test("CORS denies unknown, spoofed and null origins before reading chats or contacting the model", async () => {
+  const saved = globalThis.fetch;
+  globalThis.fetch = async () => { assert.fail("disallowed origins must not reach the model"); };
+  try {
+    for (const origin of ["https://attacker.example", "https://joruno-c.github.io.attacker.example", "http://joruno-c.github.io", "https://joruno-c.github.io/", "null", ""]) {
+      const result = await POST(new Request("https://api.example/api/analyze", { method: "POST", headers: { Origin: origin, "Content-Type": "application/json" }, body: JSON.stringify(input) }));
+      assert.equal(result.status, 403);
+      assert.equal(result.headers.get("access-control-allow-origin"), null);
+      assert.equal(result.headers.get("access-control-allow-credentials"), null);
+      assert.match(result.headers.get("cache-control")!, /no-store/);
+    }
+  } finally { globalThis.fetch = saved; }
+});
+
+test("CORS preflight denies arbitrary methods and headers", async () => {
+  for (const patch of [
+    { Origin: "https://attacker.example" },
+    { "Access-Control-Request-Method": "GET" },
+    { "Access-Control-Request-Method": "DELETE" },
+    { "Access-Control-Request-Headers": "Content-Type, Authorization" },
+    { "Access-Control-Request-Headers": "X-Custom-Header" },
+  ]) {
+    const headers = new Headers({ Origin: browserOrigins[0], "Access-Control-Request-Method": "POST", "Access-Control-Request-Headers": "Content-Type" });
+    for (const [key, value] of Object.entries(patch)) headers.set(key, value);
+    const result = await OPTIONS(new Request("https://api.example/api/analyze", { method: "OPTIONS", headers }));
+    assert.equal(result.status, 403);
+    assert.equal(result.headers.get("access-control-allow-methods"), null);
+    assert.equal(result.headers.get("access-control-allow-headers"), null);
+    assert.equal(result.headers.get("access-control-allow-credentials"), null);
+  }
+});
+
+test("local development accepts only exact same-origin loopback requests", async () => {
+  for (const origin of ["http://localhost:5175", "http://127.0.0.1:5175", "http://[::1]:5175"]) {
+    const url = `${origin}/api/analyze`;
+    const preflight = await OPTIONS(new Request(url, { method: "OPTIONS", headers: {
+      Origin: origin, "Access-Control-Request-Method": "POST", "Access-Control-Request-Headers": "Content-Type",
+    } }));
+    assert.equal(preflight.status, 204);
+    assert.equal(preflight.headers.get("access-control-allow-origin"), origin);
+    const post = await POST(new Request(url, { method: "POST", headers: { Origin: origin, "Content-Type": "application/json" }, body: "invalid JSON" }));
+    assert.equal(post.status, 400); // Passed Origin validation; no model call.
+    assert.equal(post.headers.get("access-control-allow-origin"), origin);
+  }
+});
+
+test("local development rejects cross-port, cross-host and production-to-local Origin mismatches", async () => {
+  for (const [url, origin] of [
+    ["http://localhost:5175/api/analyze", "http://localhost:5176"],
+    ["http://127.0.0.1:5175/api/analyze", "http://127.0.0.1:5176"],
+    ["http://[::1]:5175/api/analyze", "http://[::1]:5176"],
+    ["http://localhost:5175/api/analyze", "http://127.0.0.1:5175"],
+    ["http://localhost.attacker.example:5175/api/analyze", "http://localhost.attacker.example:5175"],
+    ["https://api.example/api/analyze", "http://localhost:5175"],
+  ]) {
+    const headers = { Origin: origin, "Content-Type": "application/json", "Access-Control-Request-Method": "POST", "Access-Control-Request-Headers": "Content-Type" };
+    const post = await POST(new Request(url, { method: "POST", headers, body: "invalid JSON" }));
+    assert.equal(post.status, 403);
+    assert.equal(post.headers.get("access-control-allow-origin"), null);
+    const preflight = await OPTIONS(new Request(url, { method: "OPTIONS", headers }));
+    assert.equal(preflight.status, 403);
+    assert.equal(preflight.headers.get("access-control-allow-origin"), null);
+  }
 });

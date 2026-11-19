@@ -1,7 +1,7 @@
 {
-  "fixture_version": 1,
+  "fixture_version": 2,
   "source": "Course project group chat snapshot, 2026-11-18 (UTC+08:00)",
-  "purpose": "Numerical regression of existing annotations; not a semantic rescoring benchmark",
+  "purpose": "Numerical regression of existing annotations and a public interaction walkthrough with privacy-redacted original analysis rationales; not a semantic rescoring benchmark",
   "records": 1497,
   "members": 5,
   "participant_counts": {
@@ -40,18 +40,29 @@
   "privacy": {
     "senders": "Stable anonymous labels; mapping not published",
     "messages": "Every text/media/system body replaced with a fixed placeholder",
-    "rationales": "Every original rationale removed",
+    "rationales": "Original analysis explanations retained where generic; identifying event details, personal incidents, exact schedules and role assignments generalized. No new scoring or invented explanations.",
     "tags": "Replaced with record kind; original tags not published",
     "dimensions": "Mapped from a fixed group collaboration category allowlist",
-    "retained": "Original timestamps, order and two numerical deltas; expected index/OHLC only",
+    "retained": "Original timestamps, order, two numerical deltas and existing numerical expectations; privacy-redacted analysis explanations",
     "omitted": "Names, user IDs, contact details, attachments, URLs, local paths and source identifiers",
-    "limitations": "Timestamps and numerical trajectories remain observable. Placeholder lengths change interaction-volume values; this fixture does not reproduce original volume or event tags."
+    "limitations": "Timestamps and numerical trajectories remain observable. Original message bodies remain hidden, so readers cannot independently verify every semantic judgment. Placeholder lengths change interaction-volume values; this fixture does not reproduce original volume or event tags."
   },
   "sha256": {
     "expected_index.csv": "dca0098fcc54644edc6ef146ec5259d1ab301244afc39e95d8c126b49bef72c2",
     "expected_ohlc.json": "e7f8daf966c32b9a45a7aeb5ac5d6eaa8cba0fd9420eeff8676d57f1d33e5270",
     "messages.csv": "e2be8ea8f51166434faa58e47672afd6e82123d621a63de3d058af20555cb1c2",
     "messages.jsonl": "d3ba809ed41ac85a9993fea56d0db1784174541fc5d4be7b3cee7727fc761669",
-    "scored.jsonl": "b0fe9f31416ca89911bd2e1eb4e15de921d65ce41b1469daf31a1bba3acba5b5"
+    "scored.jsonl": "b0fe9f31416ca89911bd2e1eb4e15de921d65ce41b1469daf31a1bba3acba5b5",
+    "sample.json": "0f45d04f29b6c7a695bb08a64fc236d6095f825f04c52da3b50e4b7a3a70f03d",
+    "public_rationales": "002b1c592a0f2fdef964354aa1b6e55364dfec362abba746583ad8b50e1d86a8"
+  },
+  "rationale_review": {
+    "records_reviewed": 1497,
+    "unique_original_rationales": 1473,
+    "retained_without_changes": 1237,
+    "generalized_for_privacy": 260,
+    "alignment": "Original zero-based record index + 1 matched public ID, timestamp and both deltas for all 1497 records",
+    "method": "Every original rationale reviewed; retain interaction-specific evidence and uncertainty, generalize identifying details, keep every other sample field unchanged",
+    "non_rationale_fields_sha256": "c4e489119197092405abe472ae8f3664375c049daba6cb3e49d8b15e63d4b3eb"
   }
 }
