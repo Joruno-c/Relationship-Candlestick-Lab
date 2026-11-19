@@ -1,0 +1,6 @@
+* text=auto eol=lf
+*.png -text
+*.cmd text eol=crlf
+# Preserve fixture checksums and the upstream library's published bytes.
+examples/group_chat/* -text
+frontend/vendor/lightweight-charts-5.0.8.js -text
