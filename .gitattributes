@@ -1,4 +1,6 @@
+# Source text uses LF; the Windows launcher keeps CRLF on checkout.
 * text=auto eol=lf
+# Images are binary and must not receive text conversion.
 *.png -text
 *.cmd text eol=crlf
 # Preserve fixture checksums and the upstream library's published bytes.
