@@ -2,7 +2,15 @@
 
 本页描述当前仓库。原项目架构说明完整保存在 [上游归档](docs/upstream/ARCHITECTURE.md)，其中的历史计划和双人评分假设不等于本版现状。
 
-## 两条输入路径
+## 公开网页版与本地版
+
+公开入口是 [GitHub Pages 在线实验室](https://joruno-c.github.io/Relationship-Candlestick-Lab/)。`online/app/page.tsx` 在浏览器内解析文件、计算指数与图表；`online/static-pages/` 复用该页面生成静态入口。新聊天的评分请求经 `online/app/api/analyze/route.ts` 所在的 Sites 后端发送至访客选择的模型服务，Pages 本身不运行 Python 或模型接口。
+
+在线前端与后端分别发布。`online/lib/runtime-config.ts` 统一资源和接口地址；`online/vite.pages.config.ts` 设置仓库资源前缀与后端地址。访客上传内容默认只在当前页面内存中保留，需下载进度后才能换电脑继续，API Key 不进入导出文件。
+
+在线公开样本 `online/public/sample.json` 保留匿名成员、时间、评分及脱敏分析理由，隐藏聊天正文；下文的 Python 回归样本 `examples/group_chat/` 使用占位正文和占位理由。两者沿用相同评分数值，但理由的展示方式不同。部署细节见 [在线版说明](online/README.md)。
+
+## Python 本地版的两条输入路径
 
 ```text
 聊天导出 CSV / JSON / TXT
