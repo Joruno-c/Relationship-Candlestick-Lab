@@ -1,3 +1,4 @@
+# Python package metadata and runtime dependencies; install from the repository root.
 [build-system]
 requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
@@ -26,9 +27,11 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+# Editable development installation: python -m pip install -e ".[test]"
 test = ["pytest>=7.4"]
 
 [project.scripts]
+# CLI entry point; frontend/ and config/ remain alongside the source checkout.
 relationship-candlestick = "relationship_candlestick.cli:main"
 
 [tool.setuptools.packages.find]
