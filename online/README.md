@@ -57,6 +57,18 @@ npm run preview:pages
 
 Pages 发布的是静态前端；新聊天 AI 分析依赖原 Sites 后端继续运行。接口地址由 Pages 构建配置中的 `__RCL_ANALYZE_URL__` 指定，Sites 版本默认使用同源 `/api/analyze`。当前后端允许 `https://joruno-c.github.io` 的跨域请求。若迁移后端或前端域名，需要同时更新构建配置与后端的来源白名单，再分别重新部署；仅更新 Pages 不会发布后端代码。后端仍使用 `npm run build` 和原 Sites 部署流程。
 
+## 源码导航
+
+| 目录或文件 | 内容 |
+|---|---|
+| [`app/page.tsx`](app/page.tsx) | 首页、上传分析、互动结果和报告，共用同一套页面状态 |
+| [`app/api/analyze/route.ts`](app/api/analyze/route.ts) | JSON 分析接口、来源校验和跨域响应 |
+| [`lib/analysis.ts`](lib/analysis.ts) | 文件解析、指数递推、周期聚合和技术指标 |
+| [`lib/ai.ts`](lib/ai.ts) | 模型请求、批次与评分结果校验、超时和错误处理 |
+| [`static-pages/`](static-pages/) | GitHub Pages 独立构建入口 |
+| [`public/`](public/) | 匿名样本、样本说明与图表运行库 |
+| [`tests/`](tests/) | 数值重现、解析边界与模型接口回归测试 |
+
 ## 授权
 
 应用代码见 [MIT LICENSE](LICENSE)。图表运行库采用 Apache 2.0，附 [LICENSE](public/vendor/LICENSE-lightweight-charts.txt) 与 [NOTICE](public/vendor/NOTICE-lightweight-charts.txt)。
