@@ -305,6 +305,21 @@ CSV 会尝试 UTF-8（含 BOM）、GB18030 等编码。带时区的时间建议�
 
 ---
 
+## 模块导航
+
+| 模块 | 阅读入口 |
+|---|---|
+| 自动测试与网站发布 | [工作流说明](.github/workflows/README.md) |
+| 计算参数 | [配置说明](config/README.md) |
+| 引导图与文档归档 | [文档索引](docs/README.md) |
+| 格式示例与群聊样本 | [示例说明](examples/README.md) |
+| Python 本地网页 | [前端说明](frontend/README.md) |
+| 公开在线应用 | [在线版说明](online/README.md) |
+| Python 分析引擎 | [核心模块说明](relationship_candlestick/README.md) |
+| 批处理与演示脚本 | [脚本索引](scripts/README.md) |
+| 评分规则 | [规则使用说明](skill/README.md) |
+| 解析、数值与恢复验证 | [测试指南](tests/README.md) |
+
 ## 项目结构
 
 ```text
