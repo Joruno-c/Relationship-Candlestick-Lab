@@ -1,0 +1,57 @@
+{
+  "fixture_version": 1,
+  "source": "Course project group chat snapshot, 2026-11-18 (UTC+08:00)",
+  "purpose": "Numerical regression of existing annotations; not a semantic rescoring benchmark",
+  "records": 1497,
+  "members": 5,
+  "participant_counts": {
+    "System": 21,
+    "Member 01": 177,
+    "Member 02": 527,
+    "Member 03": 281,
+    "Member 04": 183,
+    "Member 05": 308
+  },
+  "record_kinds": {
+    "system": 21,
+    "text": 1276,
+    "media": 200
+  },
+  "first_timestamp": "2026-09-10T15:03:47+08:00",
+  "last_timestamp": "2026-11-18T00:01:04+08:00",
+  "initial_index": 50,
+  "latest_index": 83.4186,
+  "minimum_index": 50.0,
+  "maximum_index": 83.4364,
+  "semantic_delta_sum": 146.5,
+  "bars_per_timeframe": {
+    "5min": 260,
+    "15min": 159,
+    "30min": 122,
+    "1h": 103,
+    "2h": 82,
+    "4h": 69,
+    "1d": 33,
+    "1w": 9,
+    "1mo": 3,
+    "1q": 2,
+    "1y": 1
+  },
+  "privacy": {
+    "senders": "Stable anonymous labels; mapping not published",
+    "messages": "Every text/media/system body replaced with a fixed placeholder",
+    "rationales": "Every original rationale removed",
+    "tags": "Replaced with record kind; original tags not published",
+    "dimensions": "Mapped from a fixed group collaboration category allowlist",
+    "retained": "Original timestamps, order and two numerical deltas; expected index/OHLC only",
+    "omitted": "Names, user IDs, contact details, attachments, URLs, local paths and source identifiers",
+    "limitations": "Timestamps and numerical trajectories remain observable. Placeholder lengths change interaction-volume values; this fixture does not reproduce original volume or event tags."
+  },
+  "sha256": {
+    "expected_index.csv": "dca0098fcc54644edc6ef146ec5259d1ab301244afc39e95d8c126b49bef72c2",
+    "expected_ohlc.json": "e7f8daf966c32b9a45a7aeb5ac5d6eaa8cba0fd9420eeff8676d57f1d33e5270",
+    "messages.csv": "e2be8ea8f51166434faa58e47672afd6e82123d621a63de3d058af20555cb1c2",
+    "messages.jsonl": "d3ba809ed41ac85a9993fea56d0db1784174541fc5d4be7b3cee7727fc761669",
+    "scored.jsonl": "b0fe9f31416ca89911bd2e1eb4e15de921d65ce41b1469daf31a1bba3acba5b5"
+  }
+}
