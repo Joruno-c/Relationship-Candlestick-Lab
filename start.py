@@ -4,6 +4,9 @@
 直接双击（Windows 上需要先关联 .py 到 Python），或运行：
 
     python start.py
+
+需要 Python 3.10+。本入口启动仓库内的 Python 本地服务；
+公开网页版及其开发命令见 online/README.md。
 """
 from __future__ import annotations
 
